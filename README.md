@@ -10,7 +10,7 @@ an all-in-one dropdown selector to build a prompt string.
 
 2. Clone this repo:
    ```bash
-   git clone https://github.com/<YOUR_GITHUB>/Easy_Prompt_Selector_For_ComfyUI.gi
+   git clone https://github.com/<YOUR_GITHUB>/Easy_Prompt_Selector_For_ComfyUI.git
 
 3.	Ensure dependency is installed:
    ```bash
