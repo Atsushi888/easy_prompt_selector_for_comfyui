@@ -14,8 +14,7 @@ an all-in-one dropdown selector to build a prompt string.
 
 3.	Ensure dependency is installed:
    ```bash
-    pip install pyyaml
-
+    pip install pyyaml```
 4.	Restart ComfyUI.
 
 Auto-select defaults
