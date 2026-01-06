@@ -28,7 +28,7 @@ cd /workspace/ComfyUI/custom_nodes
 
 ### 2. Clone this repository
 ```bash
-git clone https://github.com/YOUR_GITHUB/Easy_Prompt_Selector_For_ComfyUI.git
+git clone https://github.com/Atsushi888/easy_prompt_selector_for_comfyui.git
 ```
 
 ### 3. Install dependency
