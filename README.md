@@ -9,12 +9,15 @@ an all-in-one dropdown selector to build a prompt string.
    - Example: `/workspace/ComfyUI/custom_nodes`
 
 2. Clone this repo:
-   ```bash
-   git clone https://github.com/<YOUR_GITHUB>/Easy_Prompt_Selector_For_ComfyUI.git
+	```bash
+ 	git clone https://github.com/<YOUR_GITHUB>/Easy_Prompt_Selector_For_ComfyUI.git
+ 	```
 
 3.	Ensure dependency is installed:
-   ```bash
-    pip install pyyaml```
+	```bash
+	pip install pyyaml
+	```
+
 4.	Restart ComfyUI.
 
 Auto-select defaults
