@@ -30,7 +30,7 @@ cd /workspace/ComfyUI/custom_nodes
 ### 2. リポジトリを clone
 
 ```bash
-git clone https://github.com/Atsushi888/easy_prompt_selector_for_comfy.git
+git clone https://github.com/Atsushi888/easy_prompt_selector_for_comfyui.git
 ```
 
 ### 3. 依存ライブラリをインストール
