@@ -1,5 +1,13 @@
 # Easy Prompt Selector for ComfyUI
-# Final unified version (CLIP passthrough + base_prompt input)
+# Final unified version (CLIP passthrough + selector text output only)
+#
+# Folder layout (required):
+#   easy_prompt_selector_for_comfyui/
+#     ├─ __init__.py
+#     └─ ill_hair.yml
+#
+# Dependencies:
+#   pip install pyyaml
 
 from pathlib import Path
 from typing import Dict, Any, List, Tuple
@@ -24,18 +32,28 @@ with YAML_PATH.open("r", encoding="utf-8") as f:
     DB = yaml.safe_load(f) or {}
 
 if not isinstance(DB, dict):
-    raise ValueError("[EasyPromptSelector] ill_hair.yml must be a mapping")
+    raise ValueError("[EasyPromptSelector] ill_hair.yml must be a mapping (dict).")
 
 CATEGORIES: List[str] = list(DB.keys())
 
 
 def _dropdown(cat: str) -> Tuple[List[str], Dict[str, str]]:
+    """
+    Returns:
+      options: list of labels for the UI dropdown
+      mapping: label -> prompt string
+    """
     entries = DB.get(cat, {}) or {}
+    if not isinstance(entries, dict):
+        entries = {}
+
     skip = "— (skip)"
     options = [skip] + list(entries.keys())
+
     mapping = {skip: ""}
     for k, v in entries.items():
         mapping[str(k)] = "" if v is None else str(v)
+
     return options, mapping
 
 
@@ -50,19 +68,12 @@ class EasyPromptSelector:
     @classmethod
     def INPUT_TYPES(cls):
         required: Dict[str, Any] = {
-            # CLIP passthrough (必須)
+            # CLIP passthrough (required)
             "clip": ("CLIP",),
-
-            # STRINGだが forceInput で「端子」にする
-            "base_prompt": ("STRING", {
-                "default": "",
-                "multiline": True,
-                "forceInput": True,
-            }),
         }
 
+        # Build dropdowns from YAML categories
         cls._maps: Dict[str, Dict[str, str]] = {}
-
         for cat in CATEGORIES:
             opts, m = _dropdown(cat)
             required[cat] = (opts, {"default": opts[0]})
@@ -70,17 +81,14 @@ class EasyPromptSelector:
 
         return {"required": required}
 
+    # Return clip unchanged + generated selector text
     RETURN_TYPES = ("CLIP", "STRING")
     RETURN_NAMES = ("clip", "text")
     FUNCTION = "run"
     CATEGORY = "EasyPromptSelector"
 
-    def run(self, clip, base_prompt: str = "", **kwargs):
+    def run(self, clip, **kwargs):
         parts: List[str] = []
-
-        base = (base_prompt or "").strip()
-        if base:
-            parts.append(base)
 
         for cat in CATEGORIES:
             label = kwargs.get(cat, "— (skip)")
