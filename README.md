@@ -3,30 +3,71 @@
 A simple custom node for ComfyUI that loads `ill_hair.yml` and provides
 an all-in-one dropdown selector to build a prompt string.
 
-## Install (RunPod / local ComfyUI)
+This node is designed for stable and repeatable prompt construction,
+especially useful for LoRA training and batch generation.
 
-1. Go to your ComfyUI `custom_nodes` directory:
-   - Example: `/workspace/ComfyUI/custom_nodes`
+---
 
-2. Clone this repo:
-	```bash
- 	git clone https://github.com/<YOUR_GITHUB>/Easy_Prompt_Selector_For_ComfyUI.git
- 	```
+## Features
 
-3.	Ensure dependency is installed:
-	```bash
-	pip install pyyaml
-	```
+- Load hair-related prompt definitions from `ill_hair.yml`
+- Provide dropdown selectors for all categories
+- Auto-select default values for specified categories
+- Output a single combined prompt string
+- YAML is loaded once at ComfyUI startup (fast & stable)
 
-4.	Restart ComfyUI.
+---
 
-Auto-select defaults
+## Installation
 
-Edit DEFAULT_AUTO_SELECT_CATEGORIES inside easy_prompt_selector/__init__.py.
-Categories listed there will:
-	•	not include empty option “”
-	•	default to the first item of that category in YAML
+### 1. Go to your ComfyUI custom_nodes directory
 
-Notes
-	•	ill_hair.yml is loaded once at import (ComfyUI startup).
-	•	If you edit ill_hair.yml, restart ComfyUI to reload.
+```bash
+cd /workspace/ComfyUI/custom_nodes
+```
+
+### 2. Clone this repository
+```bash
+git clone https://github.com/YOUR_GITHUB/Easy_Prompt_Selector_For_ComfyUI.git
+```
+
+### 3. Install dependency
+```bash
+pip install pyyaml
+```
+
+### 4. Restart ComfyUI
+
+⸻
+
+## Usage
+	1.	Open ComfyUI
+	2.	Add node:
+## Easy Prompt Selector (All Hair from YAML)
+	3.	Select options from dropdown menus
+	4.	Connect the prompt (STRING) output to:
+	•	Text Concatenate / Join node, or
+	•	CLIP Text Encode node directly
+
+⸻
+
+## Auto-select Defaults
+
+Inside easy_prompt_selector/__init__.py, edit:
+```bash
+DEFAULT_AUTO_SELECT_CATEGORIES = [
+    "前髪",
+    "髪色（単色）",
+]
+```
+## Notes
+	•	ill_hair.yml is loaded once at ComfyUI startup
+	•	If you modify ill_hair.yml, restart ComfyUI to apply changes
+	•	This node does not support live YAML reloading by design
+
+⸻
+
+## License
+
+MIT License
+
