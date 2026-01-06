@@ -1,151 +1,149 @@
+# Easy Prompt Selector for ComfyUI
+# - Loads ill_hair.yml once at import
+# - Provides:
+#   1) Standalone selector (no input)
+#   2) Selector with base_prompt input (recommended)
+
 from __future__ import annotations
 
 from pathlib import Path
-import re
+from typing import Dict, Any, Tuple, List
 
-import yaml
-
-
-# =========================================
-# Config
-# =========================================
-
-HERE = Path(__file__).resolve().parent
-YAML_PATH = HERE / "ill_hair.yml"
-
-# 「起動時に自動で先頭が選択されるカテゴリ」
-# ※ ill_hair.yml のトップレベルキー名と一致させること
-DEFAULT_AUTO_SELECT_CATEGORIES = [
-    "前髪",
-    "髪色（単色）",
-    # "髪の長さ",
-]
+try:
+    import yaml
+except Exception as e:
+    raise RuntimeError(
+        "[EasyPromptSelector] Missing dependency: pyyaml. Install it with: pip install pyyaml"
+    ) from e
 
 
-# =========================================
-# YAML load (once at import)
-# =========================================
+# -----------------------------
+# YAML loader (loaded once)
+# -----------------------------
+YAML_PATH = Path(__file__).with_name("ill_hair.yml")
 
-def _load_yaml() -> dict:
-    if not YAML_PATH.exists():
-        raise FileNotFoundError(f"Missing YAML file: {YAML_PATH}")
+if not YAML_PATH.exists():
+    raise FileNotFoundError(f"[EasyPromptSelector] ill_hair.yml not found: {YAML_PATH}")
 
-    data = yaml.safe_load(YAML_PATH.read_text(encoding="utf-8"))
+with YAML_PATH.open("r", encoding="utf-8") as f:
+    RAW_DB: Dict[str, Dict[str, str]] = yaml.safe_load(f) or {}
 
-    if not isinstance(data, dict):
-        raise ValueError("ill_hair.yml: root must be a mapping (dict).")
+# Expect: { category: { label: prompt_str, ... }, ... }
+if not isinstance(RAW_DB, dict):
+    raise ValueError("[EasyPromptSelector] ill_hair.yml must be a mapping (dict).")
 
-    # 各カテゴリも dict であることを期待。違ったら空dictにする（落とさない）
-    for k, v in list(data.items()):
-        if not isinstance(v, dict):
-            data[k] = {}
-
-    return data
+# Normalize categories order (keep YAML order as loaded)
+CATEGORIES: List[str] = list(RAW_DB.keys())
 
 
-DATA = _load_yaml()
-
-
-# =========================================
-# Field name mapping (category -> safe key)
-# =========================================
-
-def _safe_field_name(category: str) -> str:
+def _build_dropdown_options_for_category(cat: str) -> Tuple[List[str], Dict[str, str]]:
     """
-    Convert category label to a safe ASCII-ish field key for ComfyUI INPUT_TYPES.
-    Japanese category names are fine as display, but dict keys are safer in ASCII.
+    Returns:
+      - options: list of labels displayed in UI
+      - label_to_prompt: mapping label -> prompt string
     """
-    s = category.strip()
-    s = re.sub(r"\s+", "_", s)
-    s = re.sub(r"[^0-9A-Za-z_]", "_", s)
-    s = re.sub(r"_+", "_", s).strip("_")
-    return s or "category"
+    entries = RAW_DB.get(cat, {})
+    if not isinstance(entries, dict):
+        entries = {}
+
+    # Special option to skip this category
+    SKIP_LABEL = "— (skip)"
+    options = [SKIP_LABEL] + list(entries.keys())
+
+    label_to_prompt = {SKIP_LABEL: ""}
+    for label, prompt in entries.items():
+        label_to_prompt[str(label)] = "" if prompt is None else str(prompt)
+
+    return options, label_to_prompt
 
 
-# category name -> field key (avoid collisions)
-CAT_TO_FIELD: dict[str, str] = {}
-used = set()
-for cat in DATA.keys():
-    cat = str(cat)
-    base = _safe_field_name(cat)
-    name = base
-    i = 2
-    while name in used:
-        name = f"{base}_{i}"
-        i += 1
-    used.add(name)
-    CAT_TO_FIELD[cat] = name
-
-FIELD_TO_CAT = {field: cat for cat, field in CAT_TO_FIELD.items()}
+def _join_prompts(parts: List[str], sep: str = ", ") -> str:
+    cleaned = [p.strip() for p in parts if isinstance(p, str) and p.strip()]
+    return sep.join(cleaned)
 
 
-# =========================================
-# Node: "All-in-one" selector
-# =========================================
-
-def _build_inputs():
-    """
-    Build ComfyUI inputs dynamically from YAML.
-    - For auto-select categories: dropdown has no "" option, default is labels[0]
-    - For optional categories: dropdown includes "" (means 'not selected')
-    """
-    req = {
-        "delimiter": ("STRING", {"default": ", "}),
-        "trim_spaces": ("BOOLEAN", {"default": True}),
-    }
-
-    for cat, field in CAT_TO_FIELD.items():
-        items = DATA.get(cat, {})
-        labels = list(items.keys())
-
-        if cat in DEFAULT_AUTO_SELECT_CATEGORIES and labels:
-            req[field] = (labels, {"default": labels[0]})
-        else:
-            req[field] = ([""] + labels, {"default": ""})
-
-    return {"required": req}
-
-
-class EasyPromptSelectorAllHairFromYAML:
+# -----------------------------
+# Node: Standalone (no input)
+# -----------------------------
+class EasyPromptSelectorStandalone:
     @classmethod
     def INPUT_TYPES(cls):
-        return _build_inputs()
+        required: Dict[str, Any] = {}
+        cls._maps: Dict[str, Dict[str, str]] = {}
+
+        for cat in CATEGORIES:
+            opts, m = _build_dropdown_options_for_category(cat)
+            required[cat] = (opts, {"default": opts[0]})
+            cls._maps[cat] = m
+
+        return {"required": required}
 
     RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("prompt",)
-    FUNCTION = "build"
-    CATEGORY = "Easy Prompt Selector"
+    RETURN_NAMES = ("text",)
+    FUNCTION = "run"
+    CATEGORY = "EasyPromptSelector"
 
-    def build(self, delimiter=", ", trim_spaces=True, **kwargs):
+    def run(self, **kwargs):
         parts = []
-
-        # kwargs: field_key -> selected_label
-        for field, selected_label in kwargs.items():
-            if not selected_label:
-                continue
-
-            cat = FIELD_TO_CAT.get(field)
-            if not cat:
-                continue
-
-            prompt = DATA.get(cat, {}).get(selected_label, "")
+        for cat in CATEGORIES:
+            label = kwargs.get(cat, "— (skip)")
+            prompt = self._maps.get(cat, {}).get(label, "")
             if prompt:
                 parts.append(prompt)
 
-        sep = delimiter
-        if trim_spaces:
-            sep = sep.strip()
-            # " , " みたいな事故を避けて、区切り後ろを1スペースに寄せる
-            if sep and not sep.endswith(" "):
-                sep = sep + " "
-
-        return (sep.join(parts),)
+        final_text = _join_prompts(parts, sep=", ")
+        return (final_text,)
 
 
+# -----------------------------
+# Node: With base_prompt input
+# -----------------------------
+class EasyPromptSelectorWithBasePrompt:
+    @classmethod
+    def INPUT_TYPES(cls):
+        required: Dict[str, Any] = {
+            "base_prompt": ("STRING", {"default": "", "multiline": True}),
+        }
+        cls._maps: Dict[str, Dict[str, str]] = {}
+
+        for cat in CATEGORIES:
+            opts, m = _build_dropdown_options_for_category(cat)
+            required[cat] = (opts, {"default": opts[0]})
+            cls._maps[cat] = m
+
+        return {"required": required}
+
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text",)
+    FUNCTION = "run"
+    CATEGORY = "EasyPromptSelector"
+
+    def run(self, base_prompt: str = "", **kwargs):
+        base = (base_prompt or "").strip()
+
+        parts = []
+        if base:
+            parts.append(base)
+
+        for cat in CATEGORIES:
+            label = kwargs.get(cat, "— (skip)")
+            prompt = self._maps.get(cat, {}).get(label, "")
+            if prompt:
+                parts.append(prompt)
+
+        final_text = _join_prompts(parts, sep=", ")
+        return (final_text,)
+
+
+# -----------------------------
+# ComfyUI registry
+# -----------------------------
 NODE_CLASS_MAPPINGS = {
-    "EasyPromptSelectorAllHairFromYAML": EasyPromptSelectorAllHairFromYAML,
+    "EasyPromptSelectorStandalone": EasyPromptSelectorStandalone,
+    "EasyPromptSelectorWithBasePrompt": EasyPromptSelectorWithBasePrompt,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "EasyPromptSelectorAllHairFromYAML": "Easy Prompt Selector (All Hair from YAML)",
+    "EasyPromptSelectorStandalone": "Easy Prompt Selector (Standalone)",
+    "EasyPromptSelectorWithBasePrompt": "Easy Prompt Selector (with base_prompt)",
 }
