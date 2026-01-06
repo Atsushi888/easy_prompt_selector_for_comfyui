@@ -1,0 +1,162 @@
+髪色（単色）:
+  黒色: black hair
+  白色: white hair
+  灰色: gray hair
+  茶色: brown hair
+  赤色: red hair
+  橙色: orange hair
+  黄色: yellow hair
+  緑色: green hair
+  青色: blue hair
+  水色: aqua hair
+  紫色: purple hair
+  桃色: pink hair
+  銀色: silver hair
+  金色: blonde hair
+  白金色: platinum blonde hair
+  ライトブラウン: light brown hair
+  ライトパープル: light purple hair
+  ライトブルー: light blue hair
+  ライトグリーン: light green hair
+  ライトレッド: light red hair
+  ダークブルー: dark blue hair
+  ダークグリーン: dark green hair
+  ダークレッド: dark red hair
+
+髪色（復色）:
+  ツートンカラー: two-tone hair
+  マルチカラー: multicolored hair
+  メッシュ: streaked hair
+  ストライプ: striped hair
+  グラデーション: gradient hair
+  インナーカラー: colored inner hair
+  バイカラー: split-color hair
+  毛先だけのカラー: colored tips
+  虹色: rainbow hair
+  模様のある: patterned hair
+
+髪の長さ:
+  ベリーショート: very short hair
+  ショート: short hair
+  セミロング: medium hair
+  ロング: long hair
+  ベリーロング: very long hair
+  不条理な長さ: absurdly long hair
+  肩にかかる長さ: hair over shoulder
+  胸にかかる長さ: hair over breasts
+
+前髪:
+  短い前髪: short bangs
+  長い前髪: long bangs, hair over face
+  インテーク: hair intakes
+  でこ出し: forehead
+  オールバック1: hair slicked back
+  オールバック2: widow’s peak
+  オールバック3: hair pulled back
+  前髪をピン留め: bangs pinned back
+  ぱっつん: blunt bangs
+  姫カット: hime cut
+  カーテンヘア: curtained hair
+  センター分け1: parted bangs
+  センター分け2: parted hair
+  横流し: swept bangs
+  斜め流し: diagonal bangs
+  交差流し: crossed bangs
+  片目隠れ: hair over one eye
+  両目隠れ: hair over eyes
+  髪の間から見える目: eyes visible through hair, choppy bangs
+  目の間の垂れ下がり: hair between eyes
+  左右非対称: asymmetrical bangs
+  編み込み: braided bangs
+  アーチ状: arched bangs
+
+横髪・後髪:
+  耳の後ろの髪: hair behind ear
+  サイドロック: sidelocks
+  ドリルロック: drill sidelocks
+  横跳ね: hair flaps
+  サイドカット: sidecut
+  刈り上げ: undercut
+  うなじ: nape
+
+ポニーテイル:
+  ポニー: ponytail
+  サイドポニー: side ponytail
+  ハイポニー: high ponytail
+  ハイサイドポニー: high side ponytail
+  ローポニー: low ponytail
+  編み込みポニー: braided ponytail
+  折り返したポニー: folded ponytail
+  枝別れしたポニー: split ponytail
+  フロントポニー: front ponytail
+  ショートポニー: short ponytail
+  ワイドポニー: wide ponytail
+  ドリルポニー: drill ponytail
+  低い位置で結ぶ: low tied hair
+  低い位置で長く結ぶ: low-tied long hair
+  うなじ: nape, lone nape hair
+
+ツインテール:
+  ツイン: twintails
+  ローツイン: low twintails
+  ショートツイン: short twintails
+  編み込みツイン: braided twintails
+  ドリルツイン: twin drills
+  左右不均等の長さのツイン: uneven twintails
+  クアッド: quad tails
+
+編み込み:
+  編み込み: braid
+  クラウンブレイド: crown braid
+  フレンチブレイド: french braid
+  三つ編み（1本）: single braid
+  三つ編み（2本）: twin braids
+  三つ編み（4本）: quad braids
+  サイドに編み込み: side braid
+  両サイドに編み込み: side braids
+  低い位置で結んだ長い三つ編み: low-braided long hair
+  編み込みお団子: braided bun
+  編み込みリング: braided hair rings
+
+アップ系:
+  ハーフアップ: half updo
+  ヘアアップ: hair up
+  ワンサイドアップ: one side up
+  ツーサイドアップ: two side up
+  頭頂部結び: topknot
+  蜂の巣: beehive hairdo
+  リボン髪: bow-shaped hair
+  シナミク: cinnamiku hairstyle
+
+カット系:
+  ロングショート: short hair with long locks
+  ピクシーカット: pixie cut
+  ボウルカット: bowl cut
+  ボブカット: bob cut
+  インバーテッドボブ: inverted bob
+  ウルフカット: wolf cut
+  バズカット: buzz cut
+  坊主（女性）: bald girl
+
+ドリル・お団子・リング:
+  ドリル: drill hair
+  シングルドリル: single drill
+  ポニードリル: drill ponytail
+  ツインドリル: twin drills
+  ロードリル: low drills
+  クアッドドリル: quad drills
+  リングレット: ringlets
+  お団子（1つ）: single hair bun
+  お団子（2つ）: double hair buns
+  サイドお団子: single side bun
+  お団子カバー: bun cover
+  ダブルリング: hair rings
+  シングルリング: single hair ring
+
+その他:
+  ドレッド: dreadlocks
+  リーゼント: pompadour
+  モヒカン: mohawk
+  コーンロウ: cornrows
+  アフロ: afro hair
+  左右非対称: asymmetrical hair
