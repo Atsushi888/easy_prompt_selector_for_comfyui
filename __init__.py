@@ -1,12 +1,12 @@
 # Easy Prompt Selector for ComfyUI
-# Final unified version (CLIP passthrough + selector text output only)
+# Text-only node: outputs a single STRING built from YAML selections.
 #
-# Folder layout (required):
+# Folder layout:
 #   easy_prompt_selector_for_comfyui/
 #     ├─ __init__.py
 #     └─ ill_hair.yml
 #
-# Dependencies:
+# Dependency:
 #   pip install pyyaml
 
 from pathlib import Path
@@ -38,11 +38,6 @@ CATEGORIES: List[str] = list(DB.keys())
 
 
 def _dropdown(cat: str) -> Tuple[List[str], Dict[str, str]]:
-    """
-    Returns:
-      options: list of labels for the UI dropdown
-      mapping: label -> prompt string
-    """
     entries = DB.get(cat, {}) or {}
     if not isinstance(entries, dict):
         entries = {}
@@ -62,17 +57,13 @@ def _join(parts: List[str]) -> str:
 
 
 # -----------------------------
-# Main Node (CLIP passthrough)
+# Node: Selector -> STRING only
 # -----------------------------
-class EasyPromptSelector:
+class EasyHairPromptSelector:
     @classmethod
     def INPUT_TYPES(cls):
-        required: Dict[str, Any] = {
-            # CLIP passthrough (required)
-            "clip": ("CLIP",),
-        }
+        required: Dict[str, Any] = {}
 
-        # Build dropdowns from YAML categories
         cls._maps: Dict[str, Dict[str, str]] = {}
         for cat in CATEGORIES:
             opts, m = _dropdown(cat)
@@ -81,13 +72,12 @@ class EasyPromptSelector:
 
         return {"required": required}
 
-    # Return clip unchanged + generated selector text
-    RETURN_TYPES = ("CLIP", "STRING")
-    RETURN_NAMES = ("clip", "text")
+    RETURN_TYPES = ("STRING",)
+    RETURN_NAMES = ("text",)
     FUNCTION = "run"
     CATEGORY = "EasyPromptSelector"
 
-    def run(self, clip, **kwargs):
+    def run(self, **kwargs):
         parts: List[str] = []
 
         for cat in CATEGORIES:
@@ -96,17 +86,17 @@ class EasyPromptSelector:
             if prompt:
                 parts.append(prompt)
 
-        final_text = _join(parts)
-        return (clip, final_text)
+        text = _join(parts)
+        return (text,)
 
 
 # -----------------------------
 # ComfyUI registry
 # -----------------------------
 NODE_CLASS_MAPPINGS = {
-    "EasyPromptSelector": EasyPromptSelector,
+    "EasyHairPromptSelector": EasyHairPromptSelector,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
-    "EasyPromptSelector": "Easy Prompt Selector (CLIP passthrough)",
+    "EasyHairPromptSelector": "Easy Hair Prompt Selector (STRING only)",
 }
